@@ -32,8 +32,7 @@ const FREE_STICKER_COLOURS = [
 const NEVER_PRODUCT = {
   name: 'Never 2Fly 2Pray',
   image: never1,
-  price: 350,
-  originalPrice: 550,
+  price: 550,
   isNew: true,
   hasColourOptions: true,
   colourOptions: NEVER_COLOURS,

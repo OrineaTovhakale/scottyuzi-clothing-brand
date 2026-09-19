@@ -45,8 +45,7 @@ const NEW_RELEASES = [
   {
     name: 'Never 2Fly 2Pray',
     image: never1,
-    price: 350,
-    originalPrice: 550,
+    price: 550,
     category: 'New Products',
     isNew: true,
     hasColourOptions: true,
@@ -57,8 +56,7 @@ const NEW_RELEASES = [
   {
     name: 'Never 2Fly 2Pray',
     image: never1,
-    price: 350,
-    originalPrice: 550,
+    price: 550,
     category: 'T-Shirts',
     isNew: true,
     hasColourOptions: true,
@@ -106,13 +104,12 @@ const Collections = () => {
   const [groupedProducts,  setGroupedProducts]  = useState({});
   const [currentCategory,  setCurrentCategory]  = useState(null);
 
-  // Inject caps + new releases; strip old R550 Never 2Fly 2Pray entries
+  // Inject caps + new releases; prefer multi-colour Never 2Fly 2Pray
   const injectExtras = (all) => {
-    // Remove legacy Never 2Fly 2Pray (no colour options / still at R550)
+    // Prefer multi-colour version when both exist
     let result = all.filter(p => {
       if (p.name !== 'Never 2Fly 2Pray') return true;
-      // keep only the multi-colour sale version
-      return p.hasColourOptions === true && p.price === 350;
+      return p.hasColourOptions === true;
     });
 
     const capsAlreadyIn = result.some(p => p.name.includes('Stripe 5-Panel'));

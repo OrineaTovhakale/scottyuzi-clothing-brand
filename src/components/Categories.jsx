@@ -343,14 +343,13 @@ const Categories = () => {
     'White and Black',
   ];
 
-  // New Never 2Fly 2Pray (multi-colour) leads New Drops — sale R350 from R550
+  // Never 2Fly 2Pray tshirts — regular price R550
   const saleDrops = [
-    { name: "Never 2Fly 2Pray", image: never1, hoverImage: null, price: 350,
+    { name: "Never 2Fly 2Pray", image: never1, hoverImage: null, price: 550,
       product: {
         name: "Never 2Fly 2Pray",
         image: never1,
-        price: 350,
-        originalPrice: 550,
+        price: 550,
         isNew: true,
         hasColourOptions: true,
         colourOptions: NEVER_COLOURS,
@@ -360,12 +359,11 @@ const Categories = () => {
     { name: "Cargo Bellas Trousers", image: cargoMain, hoverImage: cargoHover, price: 800,
       product: { name: "Cargo Bellas Trousers", image: cargoMain, images: [cargo1, cargo2, cargo3],
                  price: 800, isNew: true } },
-    { name: "Never 2Fly 2Pray Orange", image: prayOrange, hoverImage: null, price: 350,
+    { name: "Never 2Fly 2Pray Orange", image: prayOrange, hoverImage: null, price: 550,
       product: {
         name: "Never 2Fly 2Pray Orange",
         image: prayOrange,
-        price: 350,
-        originalPrice: 550,
+        price: 550,
         isNew: true,
         includesFreeSticker: true,
         freeStickerColours: FREE_STICKER_COLOURS,
@@ -394,8 +392,8 @@ const Categories = () => {
   const mostLovedTshirts = [
     { name: "Flannel Green Shirt", image: flannelGreen,   hoverImage: flannelGreenHover,  price: 500 },
     {
-      name: "Never 2Fly 2Pray", image: never1, hoverImage: never2Fly2PrayGray, price: 350,
-      originalPrice: 550, hasColourOptions: true, colourOptions: NEVER_COLOURS,
+      name: "Never 2Fly 2Pray", image: never1, hoverImage: never2Fly2PrayGray, price: 550,
+      hasColourOptions: true, colourOptions: NEVER_COLOURS,
       includesFreeSticker: true, freeStickerColours: FREE_STICKER_COLOURS, isNew: true,
     },
     {

@@ -94,6 +94,58 @@ const AdminDashboard = () => {
     }
   }, [isAuthenticated, filter]);
 
+  // ── ANALYTICS — server-side aggregation ───────────────────────────────
+  // Both numbers here come from Postgres functions (order_status_summary,
+  // order_monthly_revenue) instead of being computed by summing/filtering
+  // whatever rows happened to come back from the table fetch. That's what
+  // makes these figures correct regardless of how large the orders table
+  // grows — they were previously derived from `data`, which is capped at
+  // 1,000 rows by Supabase, so Total Revenue / Pending / Completed / Done /
+  // the charts would all have started quietly under-reporting the moment
+  // you passed 1,000 orders, the same way Total Orders did.
+  //
+  // Run src/../order_analytics_functions.sql in the Supabase SQL Editor
+  // once before this will work.
+  const fetchAnalytics = async () => {
+    const [{ data: summary, error: summaryError }, { data: monthly, error: monthlyError }] =
+      await Promise.all([
+        supabase.rpc('order_status_summary'),
+        supabase.rpc('order_monthly_revenue'),
+      ]);
+
+    if (summaryError) throw summaryError;
+    if (monthlyError) throw monthlyError;
+
+    const byStatus = Object.fromEntries(
+      (summary || []).map((row) => [row.status, row])
+    );
+    const countOf = (status) => byStatus[status]?.order_count ?? 0;
+    const revenueOf = (status) => parseFloat(byStatus[status]?.total_revenue ?? 0);
+
+    const totalOrders = (summary || []).reduce((sum, row) => sum + Number(row.order_count), 0);
+    const totalRevenue = revenueOf('completed') + revenueOf('done');
+
+    // order_monthly_revenue() always returns exactly 6 rows, oldest first —
+    // maps 1:1 onto the chart's fixed labels.
+    const monthlyRevenue = (monthly || []).map((row) => parseFloat(row.revenue || 0));
+
+    setAnalytics({
+      totalOrders,
+      totalRevenue,
+      pendingOrders: countOf('pending'),
+      completedOrders: countOf('completed'),
+      doneOrders: countOf('done'),
+      monthlyRevenue,
+      orderStatusBreakdown: {
+        pending: countOf('pending'),
+        completed: countOf('completed'),
+        done: countOf('done'),
+        cancelled: countOf('cancelled'),
+        failed: countOf('failed'),
+      },
+    });
+  };
+
   const fetchOrders = async () => {
     setLoading(true);
     try {
@@ -109,44 +161,18 @@ const AdminDashboard = () => {
         query = query.eq('status', filter);
       }
 
-      const { data, error } = await query;
+      const [{ data, error }] = await Promise.all([
+        query,
+        fetchAnalytics().catch((e) => console.error('Analytics failed (is the SQL run?):', e)),
+      ]);
       if (error) throw error;
 
       setOrders(data || []);
-
-      // Analytics
-      const completed = data?.filter((o) => o.status === 'completed') || [];
-      const done = data?.filter((o) => o.status === 'done') || [];
-      const pending = data?.filter((o) => o.status === 'pending') || [];
-      const cancelled = data?.filter((o) => o.status === 'cancelled') || [];
-      const failed = data?.filter((o) => o.status === 'failed') || [];
-
-      // Monthly revenue (completed + done)
-      const monthly = Array(6).fill(0);
-      [...completed, ...done].forEach((order) => {
-        const monthIndex = new Date(order.created_at).getMonth();
-        const currentMonth = new Date().getMonth();
-        const index = (monthIndex - (currentMonth - 5) + 12) % 12;
-        if (index >= 0 && index < 6) {
-          monthly[index] += parseFloat(order.total || 0);
-        }
-      });
-
-      setAnalytics({
-        totalOrders: data?.length || 0,
-        totalRevenue: [...completed, ...done].reduce((sum, o) => sum + parseFloat(o.total || 0), 0),
-        pendingOrders: pending.length,
-        completedOrders: completed.length,
-        doneOrders: done.length,
-        monthlyRevenue: monthly,
-        orderStatusBreakdown: {
-          pending: pending.length,
-          completed: completed.length,
-          done: done.length,
-          cancelled: cancelled.length,
-          failed: failed.length,
-        },
-      });
+      // NOTE: this list itself is still capped at 1,000 rows by Supabase —
+      // fine for now since it's ordered newest-first and that's what you
+      // look at day to day, but if you ever need to browse further back
+      // than the most recent 1,000 orders, this is the next thing to add
+      // proper pagination to (.range()-based "load more" / page controls).
     } catch (error) {
       console.error('Error fetching orders:', error);
       alert('Error loading orders. Check console.');

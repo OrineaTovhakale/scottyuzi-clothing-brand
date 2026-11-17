@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { categories } from '../assets/data';
 import { asset } from '../utils/assets';
+import { VEST_PRODUCT } from '../utils/vestProduct';
+import { isVestDropLive } from '../utils/vestDropLive';
 
 const stripeGreen = asset('newCaps/StripeGreen.png');
 const stripeYellow = asset('newCaps/StripeYellow.png');
@@ -42,6 +44,12 @@ const STRIPE_CAPS = [
 ];
 
 const NEW_RELEASES = [
+  ...(isVestDropLive()
+    ? [
+        { ...VEST_PRODUCT, category: 'New Products' },
+        { ...VEST_PRODUCT, category: 'T-Shirts' },
+      ]
+    : []),
   {
     name: 'Never 2Fly 2Pray',
     image: never1,

@@ -6,6 +6,8 @@ import { categories } from '../assets/data';
 import { useNavigate } from 'react-router-dom';
 import ImageComparisonSlider from './ImageComparisonSlider';
 import { asset } from '../utils/assets';
+import { VEST_PRODUCT } from '../utils/vestProduct';
+import { isVestDropLive } from '../utils/vestDropLive';
 
 const capsMostLovedImg = asset('new/caps.png');
 const originalShortsImg = asset('shorts1.png');
@@ -343,8 +345,18 @@ const Categories = () => {
     'White and Black',
   ];
 
-  // Never 2Fly 2Pray tshirts — regular price R550
+  // Vest only appears in New Drops after 10:00 AM unlock
+  const vestLive = isVestDropLive();
   const saleDrops = [
+    ...(vestLive
+      ? [{
+          name: VEST_PRODUCT.name,
+          image: VEST_PRODUCT.image,
+          hoverImage: VEST_PRODUCT.hoverImage,
+          price: VEST_PRODUCT.price,
+          product: VEST_PRODUCT,
+        }]
+      : []),
     { name: "Never 2Fly 2Pray", image: never1, hoverImage: null, price: 550,
       product: {
         name: "Never 2Fly 2Pray",

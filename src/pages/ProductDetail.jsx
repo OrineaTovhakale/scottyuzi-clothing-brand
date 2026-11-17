@@ -122,6 +122,10 @@ const ProductDetail = () => {
 
   // ── GALLERY ───────────────────────────────────────────────────────────────
   const getGalleryImages = () => {
+    // Multi-colour products with per-colour galleries (e.g. Never 2Fly 2Pray Vest)
+    if (product?.imagesByColour && selectedColour && product.imagesByColour[selectedColour]?.length) {
+      return product.imagesByColour[selectedColour];
+    }
     if (isMandela) {
       const map = product?.colourImages || { black: blackMan, red: redMan };
       return [ mandelaColour === 'red' ? map.red : map.black ];
@@ -156,6 +160,7 @@ const ProductDetail = () => {
   const images = getGalleryImages();
 
   useEffect(() => { setCurrentIndex(0); }, [sleeve]);
+  useEffect(() => { setCurrentIndex(0); }, [selectedColour]);
 
   useEffect(() => {
     const all = [];
@@ -224,6 +229,7 @@ const ProductDetail = () => {
       </div>
     );
   }
+
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
 

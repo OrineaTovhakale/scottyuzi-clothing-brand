@@ -1,19 +1,18 @@
 // src/utils/assets.js
-// All product / marketing images live in the public Supabase Storage bucket "Assets".
-// Upload your local src/assets folder INTO that bucket, keeping the same folder names.
+// All product / marketing images live in the public Cloudflare R2 bucket "scottyuzi-assets".
+// Same folder layout as before (hero/, vests/, never2fly2praycolours/, etc.).
 //
-// Example local file:
-//   src/assets/hero/NeverHero.png
-// becomes:
-//   Assets/hero/NeverHero.png
+// Example:
+//   hero/NeverHero.png
 // URL:
-//   https://slccifxxjgoaqpqabmbb.supabase.co/storage/v1/object/public/Assets/hero/NeverHero.png
+//   https://pub-7436458f73a64f40894a5c6dc32e1456.r2.dev/hero/NeverHero.png
 
 export const ASSET_BASE =
-  'https://slccifxxjgoaqpqabmbb.supabase.co/storage/v1/object/public/Assets';
+  import.meta.env.VITE_R2_PUBLIC_URL ||
+  'https://pub-7436458f73a64f40894a5c6dc32e1456.r2.dev';
 
 /**
- * Build a public URL for a file inside the Assets bucket.
+ * Build a public URL for a file inside the R2 bucket.
  * @param {string} path - path relative to the bucket root, e.g. "hero/NeverHero.png"
  *                        or "new/SU Wing tshirt2.png" (spaces are fine — they get encoded)
  */
